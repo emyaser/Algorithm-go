@@ -17,7 +17,18 @@ func main() {
 	//排序前 复制原数组
 	org_arr := make([]int, num)
 	copy(org_arr, arr)
-	Bubble(arr)
+	//冒泡排序
+	//Bubble(arr)
+	// 选择排序
+	//SelectSort(arr)
+	// 插入排序
+	//InsertSort(arr)
+	//快速排序
+	//QuickSort(arr, 0, len(arr)-1)
+	// 归并排序
+	//MergeSort(arr, 0, len(arr)-1)
+	// 堆排序
+	//HeapSort(arr)
 	sort.Ints(org_arr) //使sort模块对原数组排序
 	fmt.Println(arr[:15])
 	fmt.Println(org_arr[:15])
@@ -66,5 +77,118 @@ func Bubble(arr []int) {
 		if swapped != true {
 			break
 		}
+	}
+}
+
+func SelectSort(arr []int) {
+	for i := 0; i < len(arr)-1; i++ {
+		for j := i + 1; j <= len(arr)-1; j++ {
+			if arr[j] < arr[i] {
+				arr[j], arr[i] = arr[i], arr[j]
+			}
+		}
+	}
+}
+
+func InsertSort(arr []int) {
+	for i := 1; i <= len(arr)-1; i++ {
+		for j := i; j > 0; j-- {
+			if arr[j-1] > arr[j] {
+				arr[j-1], arr[j] = arr[j], arr[j-1]
+			}
+		}
+	}
+}
+
+func QuickSort(arr []int, l, r int) {
+	if l < r {
+		pivot := arr[r]
+		i := l - 1
+		for j := l; j < r; j++ {
+			if arr[j] <= pivot {
+				i++
+				arr[j], arr[i] = arr[i], arr[j]
+			}
+		}
+		i++
+		arr[r], arr[i] = arr[i], arr[r]
+		QuickSort(arr, l, i-1)
+		QuickSort(arr, i+1, r)
+	}
+}
+
+//合并
+func Merge(arr []int, l, mid, r int) {
+	// 分别复制左右子数组
+	n1, n2 := mid-l+1, r-mid
+	left, right := make([]int, n1), make([]int, n2)
+	copy(left, arr[l:mid+1])
+	copy(right, arr[mid+1:r+1])
+	i, j := 0, 0
+	k := l
+	for ; i < n1 && j < n2; k++ {
+		if left[i] <= right[j] {
+			arr[k] = left[i]
+			i++
+		} else {
+			arr[k] = right[j]
+			j++
+		}
+	}
+	for ; i < n1; i++ {
+		arr[k] = left[i]
+		k++
+	}
+	for ; j < n2; j++ {
+		arr[k] = right[j]
+		k++
+	}
+}
+
+//分治
+func MergeSort(arr []int, l, r int) {
+	if l < r {
+		mid := (l + r - 1) / 2
+		MergeSort(arr, l, mid)
+		MergeSort(arr, mid+1, r)
+		Merge(arr, l, mid, r)
+	}
+}
+
+//堆调整
+func adjust_heap(arr []int, i, size int) {
+	if i <= (size-2)/2 {
+		//左右子节点
+		l, r := 2*i+1, 2*i+2
+		m := i
+		if l < size && arr[l] > arr[m] {
+			m = l
+		}
+		if r < size && arr[r] > arr[m] {
+			m = r
+		}
+		if m != i {
+			arr[m], arr[i] = arr[i], arr[m]
+			adjust_heap(arr, m, size)
+		}
+	}
+}
+
+//建堆
+func build_heap(arr []int) {
+	size := len(arr)
+	//从最后一个子节点开始向前调整
+	for i := (size - 2) / 2; i >= 0; i-- {
+		adjust_heap(arr, i, size)
+	}
+}
+
+func HeapSort(arr []int) {
+	size := len(arr)
+	build_heap(arr)
+	for i := size - 1; i > 0; i-- {
+		//顶部arr[0]为当前最大值,调整到数组末尾
+		arr[0], arr[i] = arr[i], arr[0]
+		adjust_heap(arr, 0, i)
 	}
 }
